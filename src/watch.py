@@ -19,5 +19,5 @@ class ExcelFileHandler(FileSystemEventHandler):
                 return
             self.last_modified = now
 
-            print('\n원본 엑셀 파일 수정을 감지했어요. 엑셀을 수정할게요.')
+            print('\n규칙 저장 엑셀 파일의 수정을 감지했어요. 비용 현황 엑셀을 수정할게요.')
             self.run()
