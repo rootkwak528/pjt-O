@@ -1,7 +1,8 @@
+import time
 from datetime import datetime, timedelta
 from typing import Callable
-
 from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 
 class ExcelFileHandler(FileSystemEventHandler):
@@ -21,3 +22,17 @@ class ExcelFileHandler(FileSystemEventHandler):
 
             print('\n규칙 저장 엑셀 파일의 수정을 감지했어요. 비용 현황 엑셀을 수정할게요.')
             self.run()
+
+
+def watch(event_handler: ExcelFileHandler):
+
+    observer = Observer()
+    observer.schedule(event_handler, path='.', recursive=False)
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()

@@ -1,5 +1,5 @@
 import pandas as pd
-import xlwings as xw
+from openpyxl import load_workbook
 from tqdm import tqdm
 
 from src.rule import Rule
@@ -21,20 +21,17 @@ def process(rule_file_name: str, original_file_name: str, output_file_name: str)
             return
 
     # process
-    app = xw.App(visible=False)
-    wb = app.books.open(original_file_name)
-    sheet = wb.sheets.active
+    wb = load_workbook(filename=original_file_name)
+    sheet = wb.active
 
-    header = {cell: idx for idx, cell in enumerate(sheet.range('1:1').value)}
+    header = {cell.value: idx for idx, cell in enumerate(sheet[1])}
 
-    for row in tqdm(range(2, sheet.range('A1').current_region.last_cell.row)):
-        row_data = sheet.range(f'{row}:{row}').value
+    for row in tqdm(tuple(sheet.iter_rows(min_row=2))):
         for rule in rules:
-            if rule.desc_rule(row_data[header['적요']]) and rule.writer_rule(row_data[header['작성자']]):
-                sheet.range((row, header['구분1'] + 1)).value = rule.div1
-                sheet.range((row, header['구분2'] + 1)).value = rule.div2
-                sheet.range((row, header['구분3'] + 1)).value = rule.div3
+            if rule.desc_rule(row[header['적요']].value) and rule.writer_rule(row[header['작성자']].value):
+                row[header['구분1']].value = rule.div1
+                row[header['구분2']].value = rule.div2
+                row[header['구분3']].value = rule.div3
                 break
 
-    wb.save()
-    app.quit()
+    wb.save(output_file_name)
