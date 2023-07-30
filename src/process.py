@@ -22,7 +22,7 @@ def process(rule_file_name: str, original_file_name: str, output_file_name: str)
 
     # process
     wb = load_workbook(filename=original_file_name)
-    sheet = wb.active
+    sheet = wb["비용현황"]
 
     header = {cell.value: idx for idx, cell in enumerate(sheet[1])}
 
