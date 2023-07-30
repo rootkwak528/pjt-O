@@ -5,10 +5,16 @@ from tqdm import tqdm
 from src.rule import Rule
 
 
+def find_header_row_from_sheet(sheet: str):
+    for i in range(1, sheet.max_row + 1):
+        if sheet[f'E{i}'].value is not None:
+            return i
+
+
 def process(rule_file_name: str, original_file_name: str, output_file_name: str):
 
     # pre_process
-    rule_df = pd.read_excel(rule_file_name, sheet_name='rule', header=0)
+    rule_df = pd.read_excel(rule_file_name, sheet_name='rule', header=1)
 
     rules = [
         Rule(_row['구분1'], _row['구분2'], _row['구분3'], _row['적요조건'], _row['작성자조건'])
@@ -24,9 +30,10 @@ def process(rule_file_name: str, original_file_name: str, output_file_name: str)
     wb = load_workbook(filename=original_file_name)
     sheet = wb["비용현황"]
 
-    header = {cell.value: idx for idx, cell in enumerate(sheet[1])}
+    header_row = find_header_row_from_sheet(sheet)
+    header = {cell.value: idx for idx, cell in enumerate(sheet[header_row])}
 
-    for row in tqdm(tuple(sheet.iter_rows(min_row=2))):
+    for row in tqdm(tuple(sheet.iter_rows(min_row=header_row+1))):
         for rule in rules:
             if rule.desc_rule(row[header['적요']].value) and rule.writer_rule(row[header['작성자']].value):
                 row[header['구분1']].value = rule.div1

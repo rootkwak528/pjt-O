@@ -9,14 +9,14 @@ class ExcelFileHandler(FileSystemEventHandler):
     def __init__(self, file_path: str, run: Callable[[], None]):
         self.file_path = file_path
         self.run = run
-        self.last_modified = datetime.now()
+        self.last_modified = None
 
     def on_modified(self, event):
         if not event.is_directory and event.src_path.endswith(self.file_path):
 
             # 중복 수행 방지
             now = datetime.now()
-            if now - self.last_modified < timedelta(seconds=3):
+            if self.last_modified is not None and now - self.last_modified < timedelta(seconds=10):
                 return
             self.last_modified = now
 
