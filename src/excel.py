@@ -18,4 +18,5 @@ class PyExcel:
                 wb.Close(SaveChanges=False)  # 변동사항 저장 여부
 
     def open(self):
-        self.excel.Workbooks.Open(f"{os.getcwd()}\{self.file_path}")
+        wb = self.excel.Workbooks.Open(f"{os.getcwd()}\{self.file_path}")
+        wb.Sheets("비용현황").Activate()
