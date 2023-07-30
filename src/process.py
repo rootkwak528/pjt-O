@@ -8,11 +8,11 @@ from src.rule import Rule
 def process(rule_file_name: str, original_file_name: str, output_file_name: str):
 
     # pre_process
-    rule_df = pd.read_excel(rule_file_name, header=0)
+    rule_df = pd.read_excel(rule_file_name, sheet_name='rule', header=0)
 
     rules = [
         Rule(_row['구분1'], _row['구분2'], _row['구분3'], _row['적요'], _row['작성자'])
-        for _, _row in rule_df.iterrows()
+        for _, _row in rule_df.iterrows() if _row["#"] != "예시"
     ]
 
     # validation
